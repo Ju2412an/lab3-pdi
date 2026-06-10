@@ -1,0 +1,25 @@
+# === Datos (NO subir: 1 GB, no caben en GitHub) ===
+archive.zip
+data/
+*.zip
+
+# === Entorno virtual / Python ===
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# === Grabaciones de clase (pesadas, no son parte del entregable) ===
+*.mp4
+*.m4a
+GMT*Recording*.txt
+GMT*newChat.txt
+
+# === Salidas voluminosas / temporales ===
+results/run_full.log
+
+# === Sistema / editores ===
+.DS_Store
+Thumbs.db
+.ipynb_checkpoints/
+.vscode/

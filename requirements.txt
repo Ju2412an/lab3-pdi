@@ -1,0 +1,12 @@
+# PyTorch con CUDA 12.4 (probado en GTX 1060, Python 3.12).
+# El --extra-index-url es necesario para las ruedas +cu124.
+--extra-index-url https://download.pytorch.org/whl/cu124
+torch==2.6.0+cu124
+torchvision==0.21.0+cu124
+matplotlib
+scikit-learn
+torchinfo
+
+# Solo si vas a abrir el notebook:
+# jupyter
+# ipykernel

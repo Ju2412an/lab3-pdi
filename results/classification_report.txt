@@ -1,0 +1,37 @@
+TEST accuracy: 0.7850
+
+                                     precision    recall  f1-score   support
+
+                 Apple - Apple Scab      0.857     0.588     0.698        51
+                  Apple - Black Rot      0.795     0.620     0.697        50
+           Apple - Cedar Apple Rust      0.944     0.773     0.850        44
+                    Apple - Healthy      0.861     0.608     0.713        51
+       Bell Pepper - Bacterial Spot      0.692     0.750     0.720        48
+              Bell Pepper - Healthy      0.872     0.680     0.764        50
+                   Cherry - Healthy      0.608     0.978     0.750        46
+            Cherry - Powdery Mildew      0.812     0.907     0.857        43
+Corn (Maize) - Cercospora Leaf Spot      0.702     0.733     0.717        45
+         Corn (Maize) - Common Rust      0.958     0.958     0.958        48
+             Corn (Maize) - Healthy      0.940     1.000     0.969        47
+Corn (Maize) - Northern Leaf Blight      0.705     0.896     0.789        48
+                  Grape - Black Rot      0.634     0.542     0.584        48
+       Grape - Esca (Black Measles)      0.635     0.688     0.660        48
+                    Grape - Healthy      0.864     0.884     0.874        43
+                Grape - Leaf Blight      0.804     0.953     0.872        43
+             Peach - Bacterial Spot      0.929     0.848     0.886        46
+                    Peach - Healthy      0.782     0.977     0.869        44
+              Potato - Early Blight      0.830     0.796     0.812        49
+                   Potato - Healthy      0.805     0.717     0.759        46
+               Potato - Late Blight      0.764     0.857     0.808        49
+               Strawberry - Healthy      0.843     0.935     0.887        46
+           Strawberry - Leaf Scorch      0.792     0.844     0.817        45
+            Tomato - Bacterial Spot      0.660     0.814     0.729        43
+              Tomato - Early Blight      0.700     0.438     0.538        48
+                   Tomato - Healthy      0.941     0.980     0.960        49
+               Tomato - Late Blight      0.667     0.596     0.629        47
+        Tomato - Septoria Leaf Spot      0.778     0.636     0.700        44
+    Tomato - Yellow Leaf Curl Virus      0.778     0.857     0.816        49
+
+                           accuracy                          0.785      1358
+                          macro avg      0.791     0.788     0.782      1358
+                       weighted avg      0.792     0.785     0.781      1358
