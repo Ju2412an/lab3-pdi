@@ -1,6 +1,8 @@
 # === Datos (NO subir: 1 GB, no caben en GitHub) ===
 archive.zip
 data/
+# copia del dataset extraída por Windows (redundante con data/)
+archive/
 *.zip
 
 # === Entorno virtual / Python ===

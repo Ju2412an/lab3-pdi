@@ -7,78 +7,77 @@
 
 ---
 
-# PARTE 1 — Guion de la demostración funcional (en vivo)
+# PARTE 1 — Guion de la demostración funcional (con la interfaz web)
+
+> Toda la demo se hace desde la **interfaz web (Gradio)**: nada de escribir comandos en vivo.
+> Solo se lanza una vez al principio y se navega por pestañas.
 
 ## ✅ Antes de empezar (preparación, 2 min antes de exponer)
-- [ ] Abrir **PowerShell** en la carpeta del proyecto:
+- [ ] Abrir **PowerShell** en la carpeta del proyecto y **lanzar la interfaz**:
   ```powershell
   cd "D:\Education\UDEA\Electivas\procesamiento imagenes\practica 3"
+  .venv\Scripts\python.exe app.py
   ```
-- [ ] Verificar que la GPU responde (opcional):
-  ```powershell
-  .venv\Scripts\python.exe -c "import torch; print(torch.cuda.get_device_name(0))"
-  ```
-- [ ] Tener a mano **2 imágenes**: una hoja del Test (clara) y una imagen "rara"
-  (screenshot o foto con fondo distinto) para mostrar el límite del modelo.
-- [ ] Tener abierta la carpeta `results\` por si hay que mostrar las figuras de respaldo.
+  Se abre solo en el navegador (`http://127.0.0.1:7860`). **Déjalo abierto antes de exponer.**
+- [ ] Tener lista **1 imagen "rara"** (un screenshot o foto de hoja con fondo distinto) en una
+  carpeta fácil de encontrar, para el momento del "límite del modelo".
+- [ ] Maximizar la ventana del navegador y verificar que se ven las 3 pestañas.
 
-> **Plan B (si algo falla en vivo):** abrir directamente las imágenes de `results\`
-> (`curvas.png`, `matriz_confusion.png`, `predicciones.png`). Ya están generadas, no
-> dependen de ejecutar nada.
+> **Plan B (si la interfaz no abre):** las figuras ya están en `results\` y se ven en GitHub
+> (pestaña del repo). También quedan los scripts `demo.py` y `clasificar.py` como respaldo.
 
 ---
 
 ## 🎬 Momento 1 — "Entrenamos el modelo localmente"
-**🖥️ Mostrar:** `results\curvas.png` y `results\matriz_confusion.png`
+**🖥️ Pestaña:** **📊 Resultados del entrenamiento**
 
 **🎤 Qué decir:**
-> "Implementamos Vision Mamba **desde cero** y lo entrenamos en una GPU local. Aquí están
-> las curvas: la *accuracy* sube y la *loss* baja de forma estable, y la curva de validación
-> sigue a la de entrenamiento, así que **no hay sobreajuste**. En la matriz de confusión se ve
-> una **diagonal marcada**: el modelo acierta la mayoría de las 29 clases. El resultado final
-> es **78.5% de accuracy en Test**, y eso **sin usar pesos preentrenados**."
+> "Implementamos Vision Mamba **desde cero** y lo entrenamos en una GPU local. Aquí están las
+> curvas: la *accuracy* sube y la *loss* baja de forma estable, y la curva de validación sigue a
+> la de entrenamiento, así que **no hay sobreajuste**. En la matriz de confusión se ve una
+> **diagonal marcada**: acierta la mayoría de las 29 clases. El resultado final es **78.5% de
+> accuracy en Test**, y eso **sin usar pesos preentrenados**." *(Señalar la diagonal y, si
+> hay tiempo, bajar al reporte por clase.)*
 
 ---
 
-## 🎬 Momento 2 — "Veámoslo prediciendo" (demo.py)
-**🖥️ Ejecutar:**
-```powershell
-.venv\Scripts\python.exe demo.py
-```
-Se abre una ventana con 12 predicciones del Test (verde = acierto, rojo = error).
+## 🎬 Momento 2 — "Clasifiquemos una hoja enferma, con alta confianza"
+**🖥️ Pestaña:** **🔎 Clasificar imagen** → clic en el ejemplo **Peach - Bacterial Spot**
 
 **🎤 Qué decir:**
-> "Esto son 12 imágenes de prueba que el modelo **nunca vio**. En verde los aciertos, en rojo
-> los errores. Acierta **9 de 12**, consistente con el 78.5% global. Y fíjense que cuando se
-> equivoca, suele confundir **enfermedades parecidas de la misma planta**, no cosas absurdas."
+> "Pasemos a clasificar. Esta es una hoja de durazno con una infección bacteriana; se ven las
+> manchas negras. El modelo no solo dice la clase, sino **qué tan seguro está**: la acierta con
+> casi **99%**, y el top-5 muestra que las demás opciones quedan muy por debajo."
 
 ---
 
-## 🎬 Momento 3 — "Clasifiquemos una hoja en vivo, con alta confianza" (clasificar.py)
-**🖥️ Ejecutar** y elegir en el selector una hoja **del Test**:
-```powershell
-.venv\Scripts\python.exe clasificar.py
-```
+## 🎬 Momento 3 — "Y también reconoce las sanas"
+**🖥️ Misma pestaña** → clic en el ejemplo **Cherry - Healthy** (o **Corn - Common Rust**)
 
 **🎤 Qué decir:**
-> "Ahora una sola imagen. El modelo no solo dice la clase, sino **qué tan seguro está**: aquí la
-> predice con más del **90%** de confianza, y el top-5 muestra que las demás opciones quedan muy
-> por debajo. En imágenes parecidas a las de entrenamiento, el modelo es **muy confiable**."
+> "No solo detecta enfermedades: con una hoja **sana** también acierta con más del **95%**. Es
+> decir, el modelo es **muy confiable** en imágenes parecidas a las de entrenamiento."
 
 ---
 
-## 🎬 Momento 4 — "Pero tiene límites" (clasificar.py con imagen rara)
-**🖥️ Ejecutar** y elegir una imagen **distinta** (screenshot / otra fuente):
-```powershell
-.venv\Scripts\python.exe clasificar.py
-```
+## 🎬 Momento 4 — "Pero tiene límites" (domain gap)
+**🖥️ Misma pestaña** → **arrastrar la imagen "rara"** que preparaste (screenshot / otra fuente)
 
 **🎤 Qué decir:**
-> "Si en cambio le damos una imagen **distinta** a las del dataset, su confianza cae a ~**28%** y
-> reparte la probabilidad entre clases que no tienen relación. Esto se llama **domain gap**: el
-> modelo fue entrenado con fotos muy estandarizadas (una hoja, fondo uniforme) y **no generaliza**
-> bien a imágenes que se ven diferentes. Es una **limitación honesta** que tendríamos que resolver
-> con datos más variados."
+> "Ahora le damos una imagen **distinta** a las del dataset. Su confianza cae a ~**28%** y reparte
+> la probabilidad entre clases sin relación. Esto se llama **domain gap**: el modelo se entrenó
+> con fotos muy estandarizadas (una hoja, fondo uniforme) y **no generaliza** bien a imágenes que
+> se ven diferentes. Es una **limitación honesta** que se resolvería con datos más variados."
+
+---
+
+## 🎬 Momento 5 (opcional) — "En conjunto, no fue suerte"
+**🖥️ Pestaña:** **🎲 Prueba aleatoria del Test** → dejar 8 imágenes → botón **Probar**
+
+**🎤 Qué decir:**
+> "Por último, una prueba al azar sobre imágenes que el modelo **nunca vio**: acierta la mayoría
+> (✅), y cuando falla suele confundir **enfermedades parecidas de la misma planta**. Esto
+> confirma el 78.5% global; no fue un caso afortunado."
 
 ---
 
@@ -86,10 +85,22 @@ Se abre una ventana con 12 predicciones del Test (verde = acierto, rojo = error)
 **🎤 Qué decir:**
 > "En resumen: un Mamba implementado desde cero, entrenado localmente, llega a **78.5%** en 29
 > clases de enfermedades de plantas. Es **muy confiable en su dominio** y muestra **límites claros**
-> fuera de él. Todo el código y los resultados están en nuestro repositorio de GitHub."
+> fuera de él. Todo —código, resultados e interfaz— está en nuestro repositorio de GitHub."
 
-**Narrativa en una frase:** *funciona en general (demo) → con alta confianza en su dominio
-(clasificar Test) → pero tiene límites fuera de él (clasificar imagen rara).*
+**Narrativa en una frase:** *entrenó bien (resultados) → acierta enfermas y sanas con alta
+confianza (clasificar) → pero tiene límites fuera de su dominio (imagen rara) → y no fue suerte
+(prueba aleatoria).*
+
+---
+
+## 🔁 Resumen de clics (chuleta para tener al lado)
+| Paso | Pestaña | Acción |
+|---|---|---|
+| 1 | 📊 Resultados | señalar curvas + matriz (78.5%) |
+| 2 | 🔎 Clasificar | clic ejemplo **Peach - Bacterial Spot** (~99%) |
+| 3 | 🔎 Clasificar | clic ejemplo **Cherry - Healthy** (~95%) |
+| 4 | 🔎 Clasificar | arrastrar **imagen rara** (~28%, domain gap) |
+| 5 | 🎲 Prueba aleatoria | botón **Probar** con 8 imágenes |
 
 ---
 ---
