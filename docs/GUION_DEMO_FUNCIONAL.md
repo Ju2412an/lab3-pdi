@@ -110,6 +110,39 @@ confianza (clasificar) → pero tiene límites fuera de su dominio (imagen rara)
 > Objetivo: entender **qué hace cada archivo y cada pieza** para responder preguntas, sin
 > memorizar línea por línea.
 
+---
+
+## 🖥️ GUÍA DE PANTALLA — qué mostrar mientras tu compañero explica
+
+> **Tu rol:** abrir `train_local.py` y, conforme tu compañero va narrando, **ir saltando a estas
+> líneas y señalarlas**. En VS Code puedes saltar con `Ctrl+G` → escribir el número de línea.
+> *(El notebook `Vision_Mamba_PlantVillage_LOCAL.ipynb` tiene el mismo código en celdas si lo
+> prefieres proyectar así.)*
+
+| # | Cuando tu compañero dice… | Tú muestras (`train_local.py`) | Qué señalar |
+|---|---|---|---|
+| 1 | "Definimos los hiperparámetros del modelo" | **líneas 24–50** (`class CFG`) | `img_size`, `embed_dim`, `depth`, `d_state`, `epochs` |
+| 2 | "La imagen se parte en parches → secuencia de tokens" | **líneas 142–146** (`self.patch`, `self.pos`) | el `Conv2d` 16×16 y el *positional embedding* |
+| 3 | "Normalización ligera, estilo Mamba" | **líneas 60–67** (`class RMSNorm`) | que normaliza sin restar la media |
+| 4 | "El bloque Mamba expande y crea una compuerta `z`" | **línea 80** + **117–118** (`in_proj`, `chunk`) | cómo sale `(xs, z)` |
+| 5 | "Conv1d causal: mezcla cada token con sus vecinos" | **líneas 81–84** + **119–122** | el `Conv1d` *depthwise* + `SiLU` |
+| 6 | "Δ, B, C se calculan **desde la entrada** (selectivo)" | **líneas 107–111** (`def ssm`) | `x_proj`, el `split` en Δ,B,C, `softplus` |
+| 7 | "A se define estable como −exp(A_log)" | **línea 108** (y def en 87–88) | `A = -torch.exp(self.A_log...)` |
+| 8 | "El *selective scan*: recurrencia lineal O(L)" | **líneas 92–105**, núcleo **97–103** | el `for t in range(l)` → `h = dA*h + dBu` |
+| 9 | "Escaneamos hacia adelante y atrás (bidireccional)" | **líneas 124–125** | `self.ssm(xs.flip(1)).flip(1)` |
+| 10 | "Compuerta: cuánta señal del SSM pasa" | **línea 126** | `y = y * F.silu(z)` |
+| 11 | "Se arma el modelo completo: parches → bloques → clase" | **líneas 152–160** (`VisionMamba.forward`) | `patch → blocks → mean(dim=1) → head` |
+| 12 | "Promediamos los tokens y clasificamos en 29 clases" | **líneas 159–160** | `x.mean(dim=1)` y `self.head` |
+| 13 | "Entrenamos: AdamW, AMP, label smoothing" | **líneas 291–294** | `criterion`, `optimizer`, `scheduler`, `scaler` |
+| 14 | "El bucle de entrenamiento por épocas" | **líneas 313–342** | `for epoch …` y `scaler.scale(loss).backward()` (321) |
+| 15 | "Evaluamos en Test con el mejor modelo" | **líneas 357–360** | `evaluate(test_dl)` → accuracy |
+| 16 | "Matriz de confusión y reporte por clase" | **líneas 371–385** | `classification_report`, `confusion_matrix` |
+
+> **Truco:** ten el archivo abierto ya en la **línea 70** (`class MambaBlock`) antes de empezar la
+> Parte 2; ahí está "el corazón" (filas 4–10 de la tabla) y casi todo el peso de la explicación.
+
+---
+
 ## A. Archivos del proyecto
 | Archivo | Qué hace |
 |---|---|
@@ -139,20 +172,20 @@ Imagen (3,128,128)
   → Mean Pooling + Linear(160 → 29)    ⇒ clase
 ```
 
-- **PatchEmbed:** parte la imagen en parches de 16×16 y los convierte en una **secuencia** de
-  vectores (tokens). Mamba, como los Transformers, trabaja sobre secuencias.
-- **MambaBlock (el "S6", el corazón):**
-  - `in_proj`: expande el vector y crea dos ramas: `x` (la señal) y `z` (una **compuerta**).
-  - `Conv1d causal`: mezcla cada token con sus **vecinos** (contexto local).
-  - **SSM selectivo:** una recurrencia de "espacio de estados" donde los parámetros
+- **PatchEmbed** `(L142–146, 153–154)`**:** parte la imagen en parches de 16×16 y los convierte en
+  una **secuencia** de vectores (tokens). Mamba, como los Transformers, trabaja sobre secuencias.
+- **MambaBlock (el "S6", el corazón)** `(L70–127)`**:**
+  - `in_proj` `(L80, 117–118)`: expande el vector y crea dos ramas: `x` (la señal) y `z` (**compuerta**).
+  - `Conv1d causal` `(L81–84, 119–122)`: mezcla cada token con sus **vecinos** (contexto local).
+  - **SSM selectivo** `(L107–111)`**:** recurrencia de "espacio de estados" donde los parámetros
     **Δ, B, C se calculan a partir de la entrada** → el modelo **decide qué recordar y qué
     olvidar** en cada paso. Esta es la idea clave de Mamba.
-  - **selective scan:** recorre la secuencia propagando un estado interno `h`. Es una
+  - **selective scan** `(L92–105)`**:** recorre la secuencia propagando un estado interno `h`. Es una
     recurrencia de coste **lineal** O(L), no cuadrático como la atención de los Transformers.
-  - `y * SiLU(z)`: la compuerta controla cuánta señal del SSM pasa.
-- **Bidireccional:** una imagen no tiene "orden" natural, así que escaneamos la secuencia
-  **hacia adelante y hacia atrás** y sumamos (idea de *Vision Mamba / Vim*).
-- **Mean Pooling + Linear:** se promedian los tokens y una capa lineal da las 29 clases.
+  - `y * SiLU(z)` `(L126)`: la compuerta controla cuánta señal del SSM pasa.
+- **Bidireccional** `(L124–125)`**:** una imagen no tiene "orden" natural, así que escaneamos la
+  secuencia **hacia adelante y hacia atrás** y sumamos (idea de *Vision Mamba / Vim*).
+- **Mean Pooling + Linear** `(L159–160)`**:** se promedian los tokens y una capa lineal da las 29 clases.
 
 ## D. Las 3 ideas que hay que poder defender
 1. **Mamba vs Transformer:** Mamba reemplaza la atención **O(L²)** por una recurrencia SSM
