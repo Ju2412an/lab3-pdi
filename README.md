@@ -28,6 +28,15 @@ cd "practica 3"
 .venv\Scripts\python.exe train_local.py
 ```
 
+### 🖼️ Interfaz web (recomendado para la demo)
+Si ya existe el modelo entrenado (`results/vision_mamba_best.pt`, incluido en el repo), puedes
+abrir la interfaz sin entrenar:
+```powershell
+.venv\Scripts\python.exe app.py
+```
+Se abre en el navegador (http://127.0.0.1:7860) con 3 pestañas: **resultados del entrenamiento**,
+**clasificar una imagen** (con ejemplos de un clic) y **prueba aleatoria del Test**.
+
 Si PowerShell bloquea el script, ábrelo así una vez:
 `powershell -ExecutionPolicy Bypass -File .\setup_local.ps1`
 
@@ -37,6 +46,7 @@ Si PowerShell bloquea el script, ábrelo así una vez:
 
 | Archivo | Para qué |
 |---|---|
+| `app.py` | **Interfaz web (Gradio)**: ver resultados del entrenamiento y clasificar imágenes desde el navegador. |
 | `train_local.py` | **Script principal** (Parte A: Vision Mamba desde cero). Entrena y guarda todo en `results/`. |
 | `Vision_Mamba_PlantVillage_LOCAL.ipynb` | El mismo contenido en **notebook**, para exponer celda por celda. |
 | `build_notebook_local.py` | Regenera el notebook anterior. |

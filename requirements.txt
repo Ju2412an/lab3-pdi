@@ -6,6 +6,7 @@ torchvision==0.21.0+cu124
 matplotlib
 scikit-learn
 torchinfo
+gradio
 
 # Solo si vas a abrir el notebook:
 # jupyter
